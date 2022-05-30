@@ -11,7 +11,7 @@ from models.state import State
 def all_states():
     """ Return all State objects """
     return jsonify(
-        {"states": [state.to_dict() for state in storage.all(State).values()]}
+        [state.to_dict() for state in storage.all(State).values()]
         ), 200
 
 
@@ -40,7 +40,7 @@ def delete_state(state_id):
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def post_state():
     """ Create a new State object """
-    date = request.get_json()
+    date = request.get_json(silent=True)
     if date is None:
         return make_response(jsonify({"error": "Not a JSON"}), 400)
     if "name" not in date:
@@ -57,7 +57,7 @@ def put_state(state_id):
     state = storage.get(State, state_id)
     if state is None:
         abort(404)
-    date = request.get_json()
+    date = request.get_json(silent=True)
     if date is None:
         return make_response(jsonify({"error": "Not a JSON"}), 400)
     for k, v in date.items():
