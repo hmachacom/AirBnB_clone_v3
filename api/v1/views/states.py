@@ -5,7 +5,6 @@ from models import storage
 from api.v1.views import app_views
 from flask import jsonify, make_response, request, abort
 from models.state import State
-from models.base_model import BaseModel
 
 
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
@@ -13,7 +12,7 @@ def all_states():
     """ Return all State objects """
     return jsonify(
         {"states": [state.to_dict() for state in storage.all(State).values()]}
-        )
+        ), 200
 
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
@@ -22,7 +21,7 @@ def get_state(state_id):
     state = storage.get(State, state_id)
     if state is None:
         return make_response(jsonify({"error": "Not found"}), 404)
-    return jsonify(state.to_dict())
+    return jsonify(state.to_dict()), 200
 
 
 @app_views.route(
@@ -49,7 +48,7 @@ def post_state():
     new_state = State(**date)
     storage.new(new_state)
     storage.save()
-    return jsonify(new_state.to_dict()), 201
+    return make_response(jsonify(new_state.to_dict()), 201)
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
@@ -65,4 +64,4 @@ def put_state(state_id):
         if k not in ["id", "created_at", "updated_at"]:
             setattr(state, k, v)
     storage.save()
-    return jsonify(state.to_dict()), 200
+    return make_response(jsonify(state.to_dict()), 200)
