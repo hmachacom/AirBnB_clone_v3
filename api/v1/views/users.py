@@ -40,9 +40,11 @@ def user_post():
     """Create a new User object"""
     date = request.get_json(silent=True)
     if date is None:
-        return make_response(jsonify({"error": "Not a JSON"}), 400)
+        return jsonify({"error": "Not a JSON"}), 400
     if "email" not in date:
-        return ({"Missing": "email"}), 400
+        return jsonify({"Missing": "email"}), 400
+    if "password" not in date:
+        return jsonify({"Missing": "password"}), 400
     new_user = User(**date)
     new_user.save()
     return make_response(jsonify(new_user.to_dict()), 201)
