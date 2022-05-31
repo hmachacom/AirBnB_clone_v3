@@ -51,11 +51,11 @@ def place_post(city_id):
     date = request.get_json(silent=True)
     if date is None:
         return abort(400, "Not a JSON")
-    if "user_id" not in date:
-        return abort(400, "Missing user_id")
     user = storage.get(User, date["user_id"])
     if user is None:
         abort(404)
+    if "user_id" not in date:
+        return abort(400, "Missing user_id")
     if "name" not in date:
         return abort(400, "Missing name")
     date["city_id"] = city_id
@@ -68,12 +68,12 @@ def place_post(city_id):
 def place_put(place_id):
     """Updates a Place: PUT /api/v1/places/<place_id>"""
     attr = ["id", "user_id", "city_id", "created_at", "updated_at"]
-    date = request.get_json(silent=True)
-    if date is None:
-        return abort(400, "Not a JSON")
     place = storage.get(Place, place_id)
     if place is None:
         abort(404)
+    date = request.get_json(silent=True)
+    if date is None:
+        return abort(400, "Not a JSON")
     for key, value in date.items():
         if key not in attr:
             setattr(place, key, value)
