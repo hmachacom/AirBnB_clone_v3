@@ -19,11 +19,11 @@ def place_id(place_id):
 
 
 @app_views.route(
-    '/cities/<cities_id>/places', methods=['GET'], strict_slashes=False
+    '/cities/<city_id>/places', methods=['GET'], strict_slashes=False
     )
-def places_cities_id(cities_id):
+def places_city_id(city_id):
     """ Return a Place object """
-    city = storage.get(City, cities_id)
+    city = storage.get(City, city_id)
     if city is None:
         abort(404)
     places = [place.to_dict() for place in city.places]
