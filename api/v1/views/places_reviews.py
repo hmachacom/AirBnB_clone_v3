@@ -65,3 +65,22 @@ def reviews_post(place_id):
     review = Review(**date)
     storage.save()
     return jsonify(review.to_dict()), 201
+
+
+@app_views.route(
+    '/reviews/<review_id>', methods=['PUT'], strict_slashes=False
+    )
+def reviwes_put(review_id):
+    """ Update a review """
+    attr = ["id", "user_id", "place_id", "created_at", "updated_at"]
+    review = storage.get(Review, review_id)
+    if review is None:
+        abort(404)
+    date = request.get_json()
+    if date is None:
+        abort(400, "Not a JSON")
+    for key, value in date.items():
+        if key not in attr:
+            setattr(review, key, value)
+    storage.save()
+    return jsonify(review.to_dict()), 200
