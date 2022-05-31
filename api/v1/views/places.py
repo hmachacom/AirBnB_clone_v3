@@ -15,7 +15,7 @@ def place_id(place_id):
     place = storage.get(Place, place_id)
     if place is None:
         abort(404)
-    return jsonify(place.to_dict()), 200
+    return jsonify(place.to_dict())
 
 
 @app_views.route(
@@ -50,14 +50,14 @@ def place_post(city_id):
     """Creates a Place: POST /api/v1/cities/<city_id>/places"""
     date = request.get_json(silent=True)
     if date is None:
-        return jsonify({"error": "Not a JSON"}), 400
+        return make_response(jsonify({"error": "Not a JSON"}), 400)
     if "user_id" not in date:
-        return jsonify({"Missing": "user_id"}), 400
+        return make_response(jsonify({"Missing": "user_id"}), 400)
     user = storage.get(User, date["user_id"])
     if user is None:
         abort(404)
     if "name" not in date:
-        return jsonify({"Missing": "name"}), 400
+        return make_response(jsonify({"Missing": "name"}), 400)
     date["city_id"] = city_id
     new_user = Place(**date)
     new_user.save()
@@ -70,7 +70,7 @@ def place_put(place_id):
     attr = ["id", "user_id", "city_id", "created_at", "updated_at"]
     date = request.get_json(silent=True)
     if date is None:
-        return jsonify({"error": "Not a JSON"}), 400
+        return make_response(jsonify({"error": "Not a JSON"}), 400)
     place = storage.get(Place, place_id)
     if place is None:
         abort(404)
