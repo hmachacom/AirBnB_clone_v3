@@ -9,15 +9,6 @@ from models.city import City
 from models.user import User
 
 
-@app_views.route('/places/<place_id>', methods=['GET'], strict_slashes=False)
-def all_place(place_id):
-    """ retorna un objeto place """
-    place = storage.get(Place, place_id)
-    if place is None:
-        abort(404)
-    return jsonify(place.to_dict())
-
-
 @app_views.route(
     '/cities/<city_id>/places', methods=['GET'], strict_slashes=False
     )
@@ -28,6 +19,15 @@ def places_city_id(city_id):
         abort(404)
     places = [place.to_dict() for place in city.places]
     return jsonify(places), 200
+
+
+@app_views.route('/places/<place_id>', methods=['GET'], strict_slashes=False)
+def all_place(place_id):
+    """ retorna un objeto place """
+    place = storage.get(Place, place_id)
+    if place is None:
+        abort(404)
+    return jsonify(place.to_dict())
 
 
 @app_views.route(
@@ -48,6 +48,9 @@ def place_delete(place_id):
     )
 def place_post(city_id):
     """Creates a Place: POST /api/v1/cities/<city_id>/places"""
+    city = storage.get(City, city_id)
+    if city in None:
+        abort(404)
     date = request.get_json(silent=True)
     if date is None:
         return abort(400, "Not a JSON")
