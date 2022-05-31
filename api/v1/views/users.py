@@ -32,7 +32,7 @@ def user_delete(user_id):
         abort(404)
     storage.delete(user)
     storage.save()
-    return make_response(jsonify({}), 200)
+    return jsonify({}), 200
 
 
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
@@ -44,8 +44,7 @@ def user_post():
     if "email" not in date:
         return ({"Missing": "email"}), 400
     new_user = User(**date)
-    storage.new(new_user)
-    storage.save()
+    new_user.save()
     return make_response(jsonify(new_user.to_dict()), 201)
 
 
@@ -60,5 +59,5 @@ def user_put(user_id):
         abort(404)
     for key, value in date.items():
         setattr(user, key, value)
-    storage.save()
+    user.save()
     return make_response(jsonify(user.to_dict()), 200)
