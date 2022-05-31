@@ -27,7 +27,7 @@ def places_cities_id(cities_id):
     if city is None:
         abort(404)
     places = [place.to_dict() for place in city.places]
-    return jsonify(places)
+    return jsonify(places), 200
 
 
 @app_views.route(
@@ -78,4 +78,4 @@ def place_put(place_id):
         if key not in attr:
             setattr(place, key, value)
     storage.save()
-    return jsonify(place.to_dict()), 200
+    return make_response(jsonify(place.to_dict()), 200)
