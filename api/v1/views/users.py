@@ -6,6 +6,7 @@ from api.v1.views import app_views
 from flask import jsonify, make_response, request, abort
 from models.user import User
 
+
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
 def all_user():
     """ Return all User objects """
@@ -21,6 +22,7 @@ def user_id(user_id):
     if user is None:
         abort(404)
     return jsonify(user.to_dict()), 200
+
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def user_delete(user_id):
@@ -45,6 +47,7 @@ def user_post():
     storage.new(new_user)
     storage.save()
     return make_response(jsonify(new_user.to_dict()), 201)
+
 
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def user_put(user_id):
