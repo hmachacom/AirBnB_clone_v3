@@ -44,41 +44,42 @@ def place_delete(place_id):
 
 
 @app_views.route(
-    '/cities/<city_id>/places', methods=['POST'], strict_slashes=False
+    "/cities/<city_id>/places", methods=["POST"], strict_slashes=False
     )
-def place_post(city_id):
-    """Creates a Place: POST /api/v1/cities/<city_id>/places"""
-    city = storage.get(City, city_id)
-    if city in None:
+def crearP(city_id):
+    """ Crea un nuevo objeto ciudad """
+    citi = storage.get(City, city_id)
+    if citi is None:
         abort(404)
-    date = request.get_json(silent=True)
-    if date is None:
-        return abort(400, "Not a JSON")
-    if "user_id" not in date:
-        return abort(400, "Missing user_id")
-    user = storage.get(User, date["user_id"])
-    if user is None:
+    datos = request.get_json()
+    if datos is None:
+        abort(400, "Not a JSON")
+    if "user_id" not in datos:
+        abort(400, "Missing user_id")
+    usu = storage.get(User, datos['user_id'])
+    if usu is None:
         abort(404)
-    if "name" not in date:
-        return abort(400, "Missing name")
-    date["city_id"] = city_id
-    new_user = Place(**date)
-    new_user.save()
-    return make_response(jsonify(new_user.to_dict()), 201)
+    if "name" not in datos:
+        abort(400, "Missing name")
+    datos["city_id"] = city_id
+    nuevo = Place(**datos)
+    nuevo.save()
+    return make_response(jsonify(nuevo.to_dict()), 201)
 
 
-@app_views.route('/places/<place_id>', methods=['PUT'], strict_slashes=False)
-def place_put(place_id):
-    """Updates a Place: PUT /api/v1/places/<place_id>"""
-    attr = ["id", "user_id", "city_id", "created_at", "updated_at"]
-    date = request.get_json(silent=True)
-    place = storage.get(Place, place_id)
-    if place is None:
+@app_views.route("/places/<place_id>", methods=["PUT"], strict_slashes=False)
+def putP(place_id):
+    """ actualiza el objeto ciudad """
+    av = ["id", "user_id", "city_id", "created_at", "updated_at"]
+    lugar = storage.get(Place, place_id)
+    if lugar is None:
         abort(404)
-    if date is None:
-        return abort(400, "Not a JSON")
-    for key, value in date.items():
-        if key not in attr:
-            setattr(place, key, value)
+
+    datos = request.get_json(silent=True)
+    if datos is None:
+        abort(400, "Not a JSON")
+    for clave, valor in datos.items():
+        if clave not in av:
+            setattr(lugar, clave, valor)
     storage.save()
-    return make_response(jsonify(place.to_dict()), 200)
+    return make_response(jsonify(lugar.to_dict()), 200)
