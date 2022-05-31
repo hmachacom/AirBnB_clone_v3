@@ -9,14 +9,6 @@ from models.city import City
 from models.user import User
 
 
-@app_views.route('/places', methods=['GET'], strict_slashes=False)
-def all_place():
-    """ Return all Place objects """
-    return jsonify(
-        [place.to_dict() for place in storage.all(Place).values()]
-        ), 200
-
-
 @app_views.route('/places/<place_id>', methods=['GET'], strict_slashes=False)
 def place_id(place_id):
     """ Return a Place object """
@@ -52,9 +44,9 @@ def place_delete(place_id):
 
 
 @app_views.route(
-    '/cities/<cities_id>/places', methods=['POST'], strict_slashes=False
+    '/cities/<city_id>/places', methods=['POST'], strict_slashes=False
     )
-def place_post(cities_id):
+def place_post(city_id):
     """Creates a Place: POST /api/v1/cities/<city_id>/places"""
     date = request.get_json(silent=True)
     if date is None:
@@ -66,7 +58,7 @@ def place_post(cities_id):
         abort(404)
     if "name" not in date:
         return jsonify({"Missing": "name"}), 400
-    date["city_id"] = cities_id
+    date["city_id"] = city_id
     new_user = Place(**date)
     new_user.save()
     return make_response(jsonify(new_user.to_dict()), 201)
@@ -75,6 +67,7 @@ def place_post(cities_id):
 @app_views.route('/places/<place_id>', methods=['PUT'], strict_slashes=False)
 def place_put(place_id):
     """Updates a Place: PUT /api/v1/places/<place_id>"""
+    attr = ["id", "user_id", "city_id", "created_at", "updated_at"]
     date = request.get_json(silent=True)
     if date is None:
         return jsonify({"error": "Not a JSON"}), 400
@@ -82,6 +75,7 @@ def place_put(place_id):
     if place is None:
         abort(404)
     for key, value in date.items():
-        setattr(place, key, value)
+        if key not in attr:
+            setattr(place, key, value)
     storage.save()
     return jsonify(place.to_dict()), 200
