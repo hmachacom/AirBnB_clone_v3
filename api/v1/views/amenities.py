@@ -22,7 +22,7 @@ def amenity_id(amenity_id):
     """ Return a Amenity object """
     amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
-        return make_response(jsonify({"error": "Not found"}), 404)
+        abort(404)
     return jsonify(amenity.to_dict()), 200
 
 
@@ -36,7 +36,7 @@ def amenity_delete(amenity_id):
         abort(404)
     storage.delete(amenity)
     storage.save()
-    return jsonify({}), 200
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route('/amenities', methods=['POST'], strict_slashes=False)
@@ -46,7 +46,7 @@ def amenity_post():
     if date is None:
         return make_response(jsonify({"error": "Not a JSON"}), 400)
     if "name" not in date:
-        return make_response(jsonify(({"Missing": "name"}), 400))
+        return ({"Missing": "name"}), 400
     new_amenity = Amenity(**date)
     storage.new(new_amenity)
     storage.save()
